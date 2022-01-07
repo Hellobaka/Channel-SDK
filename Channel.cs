@@ -1,4 +1,5 @@
-﻿using Channel_SDK.Events;
+﻿using Channel_Native.Model;
+using Channel_SDK.Events;
 using Channel_SDK.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,9 +27,17 @@ namespace Channel_SDK
         public static WebSocket Instance;
         public event Action<Message> OnDispatchMessage;
         public event Action<Message> OnATMessage;
+        public PluginInfo PluginInfo { get; set; } = new()
+        {
+            Name = "默认名称",
+            Author = "Default",
+            Description = "默认描述",
+            Version = "1.0.0"
+        };
 
         private string url;
         private bool isConnected = false;
+        private int PluginID = 0;
         public Channel(string url = "ws://localhost:6235/main")
         {
             this.url = url;
@@ -79,10 +88,23 @@ namespace Channel_SDK
                         OnATMessage?.Invoke(message);
                     }
                     break;
+                case "Instance":
+                    switch ((MessageType)(int)json["data"]["msg"]["type"])
+                    {
+                        case MessageType.PluginInfo:
+                            PluginID = ((int)json["data"]["msg"]["id"]);
+                            //Helper.OutLog($"发送插件信息：{PluginInfo.Name} - v{PluginInfo.Version} 作者: {PluginInfo.Author}");
+                            //Helper.OutLog($"分配给本插件的ID：{PluginID}");
+                            SendMsg(MessageType.PluginInfo, new { id = PluginID, content = PluginInfo });
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
                 default:
                     break;
             }
-            if(OnATMessage==null)
+            if (OnATMessage == null)
             {
                 Send_CallResult(CallResult.Pass);
             }
@@ -99,7 +121,7 @@ namespace Channel_SDK
                 Helper.OutError("文本消息与图片消息不可同时为空");
                 return;
             }
-            var json = new { channelID, content = new { msg_id , image = imageUrl, content = msg } };
+            var json = new { channelID, content = new { msg_id, image = imageUrl, content = msg } };
             SendMsg(MessageType.PlainMsg, json);
         }
         public static void Send_CallResult(CallResult result)
@@ -111,7 +133,7 @@ namespace Channel_SDK
             JObject msgToSend = new()
             {
                 { "type", (int)msgType },
-                { "seq", msgSeq}
+                { "seq", msgSeq }
             };
             if (msg is null)
                 msgToSend.Add("data", null);
