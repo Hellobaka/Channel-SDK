@@ -12,19 +12,20 @@ namespace Channel_SDK
             string url = "ws://127.0.0.1:6235/main";
             Channel channel = new (url);
             channel.Connect();
-            channel.OnDispatchMessage += Channel_OnDispatchMessage;
+            channel.OnATMessage += Channel_OnATMessage;
             while (true)
             {
                 Console.ReadLine();
             }
         }
 
-        private static void Channel_OnDispatchMessage(Model.Message msg)
+        private static void Channel_OnATMessage(Model.Message msg)
         {
             if(msg.nonATMsg == "r")
             {
                 msg.Answer($"r: {new Random().Next(0, 6)}");
             }
+            Channel.Send_CallResult(Channel.CallResult.Block);
         }
     }
 }
