@@ -6,6 +6,9 @@
     <RootNamespace>Channel_Native</RootNamespace>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.0.0.4</Version>
+    <Authors>Hellobaka</Authors>
+    <Description>QQ频道 C#SDK</Description>
+    <PackageProjectUrl>https://github.com/Hellobaka/Channel-SDK</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
