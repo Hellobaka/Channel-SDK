@@ -10,8 +10,8 @@ namespace Channel_SDK
         static void Main(string[] args)
         {
             string url = "ws://127.0.0.1:6235/main";
-            Channel channel = new(url);
-            channel.PluginInfo = new()
+            Channel channel = new Channel(url);
+            channel.PluginInfo = new Channel_Native.Model.PluginInfo()
             {
                 Author = "落花茗",
                 Version = "1.0.0",

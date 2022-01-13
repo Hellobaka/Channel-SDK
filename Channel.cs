@@ -27,7 +27,7 @@ namespace Channel_SDK
         public static WebSocket Instance;
         public event Action<Message> OnDispatchMessage;
         public event Action<Message> OnATMessage;
-        public PluginInfo PluginInfo { get; set; } = new()
+        public PluginInfo PluginInfo { get; set; } = new PluginInfo()
         {
             Name = "默认名称",
             Author = "Default",
@@ -41,7 +41,7 @@ namespace Channel_SDK
         public Channel(string url = "ws://localhost:6235/main")
         {
             this.url = url;
-            Instance = new(url);
+            Instance = new WebSocket(url);
         }
         private void WebsocketInit()
         {
@@ -57,7 +57,7 @@ namespace Channel_SDK
             Helper.OutError($"与服务端连接断开...3秒后尝试重连，按Ctrl+C中断...");
             Thread.Sleep(1000 * 3);
             Instance.Dispose();
-            Instance = new(url);
+            Instance = new WebSocket(url);
             Connect();
         }
 
@@ -130,7 +130,7 @@ namespace Channel_SDK
         }
         private static void SendMsg(MessageType msgType, object msg)
         {
-            JObject msgToSend = new()
+            JObject msgToSend = new JObject()
             {
                 { "type", (int)msgType },
                 { "seq", msgSeq }
