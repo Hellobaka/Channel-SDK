@@ -12,8 +12,16 @@ static void Main(string[] args)
 {
     string url = "ws://127.0.0.1:6235/main";//Channel-Core 的ws
     Channel channel = new (url);
-    channel.Connect();
+    channel.PluginInfo = new()
+    {
+        Author = "Hellobaka",
+        Version = "1.0.0",
+        Name = "无情摇骰机",
+        Description = "发送r就会回复0-6的数字"
+    };
     channel.OnATMessage += Channel_OnATMessage;
+    channel.Connect();
+
     while (true)
     {
         Console.ReadLine();
