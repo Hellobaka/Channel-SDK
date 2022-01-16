@@ -37,3 +37,10 @@ private static void Channel_OnATMessage(Channel_SDK.Model.Message msg)
     Channel.Send_CallResult(CallResult.Block);//必需，否则主程序会卡壳
 }
 ```
+## 接口进度
+- [x] 发送普通图文信息
+- [x] 接收AT消息
+...
+## 待填坑
+- [ ] 完善接口
+- [x] 服务端退出自动退出
