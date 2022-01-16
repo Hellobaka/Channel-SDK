@@ -4,6 +4,8 @@ using Channel_SDK.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using WebSocket4Net;
 
@@ -38,6 +40,7 @@ namespace Channel_SDK
         private string url;
         private bool isConnected = false;
         private int PluginID = 0;
+        private int ServerProcessID = 0;
         public Channel(string url = "ws://localhost:6235/main")
         {
             this.url = url;
@@ -92,10 +95,11 @@ namespace Channel_SDK
                     switch ((MessageType)(int)json["data"]["msg"]["type"])
                     {
                         case MessageType.PluginInfo:
-                            PluginID = ((int)json["data"]["msg"]["id"]);
+                            PluginID = (int)json["data"]["msg"]["id"];
                             //Helper.OutLog($"发送插件信息：{PluginInfo.Name} - v{PluginInfo.Version} 作者: {PluginInfo.Author}");
                             //Helper.OutLog($"分配给本插件的ID：{PluginID}");
                             SendMsg(MessageType.PluginInfo, new { id = PluginID, content = PluginInfo });
+                            ServerProcessCheck((int)json["data"]["msg"]["pid"]);
                             break;
                         default:
                             break;
@@ -141,6 +145,20 @@ namespace Channel_SDK
                 msgToSend.Add("data", JToken.FromObject(msg));
             Helper.OutLog($"推送消息:{msgToSend.ToString(Formatting.None)}");
             Instance.Send(msgToSend.ToString(Formatting.None));
+        }
+        private void ServerProcessCheck(int pid)
+        {
+            new Thread(() =>
+            {
+                Helper.OutLog("启动服务器进程检测线程");
+                while (true)
+                {
+                    if (Process.GetProcesses().Any(x => x.Id == pid))
+                        Thread.Sleep(1000);
+                    else
+                        Environment.Exit(0);
+                }
+            }).Start();
         }
     }
 }
